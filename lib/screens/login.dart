@@ -15,13 +15,13 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 48),
-                  Image.asset('assets/images/nike.png', height: 48),
+                  Image.asset('assets/images/nike.png', height: 24),
                   const SizedBox(height: 24),
                   const Text(
                     'YOUR ACCOUNT FOR\nEVERYTHING NIKE',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
                       height: 1.4,
