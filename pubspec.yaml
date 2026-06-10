@@ -21,3 +21,12 @@ flutter:
    - assets/images/login_background.jpg
    - assets/images/login_background_2.jpg
    - assets/images/nike_logo.png
+   - assets/images/nike.png
+
+  fonts:
+    - family: Oswald
+      fonts:
+        - asset: assets/fonts/Oswald-Regular.ttf
+        - asset: assets/fonts/Oswald-Medium.ttf
+          weight: 700
+
