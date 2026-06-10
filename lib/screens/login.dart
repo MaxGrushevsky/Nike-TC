@@ -15,7 +15,7 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 48),
-                  Image.asset('assets/imaages/nike.png', height: 48),
+                  Image.asset('assets/images/nike.png', height: 48),
                   const SizedBox(height: 24),
                   const Text(
                     'YOUR ACCOUNT FOR\nEVERYTHING NIKE',
@@ -107,6 +107,28 @@ class LoginScreen extends StatelessWidget {
                           letterSpacing: 1,
                         ),
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 13,
+                      ),
+                      children: [
+                        const TextSpan(text: 'Not a Member? '),
+                        TextSpan(
+                          text: 'Join Us.',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 24),
