@@ -15,7 +15,37 @@ class JoinScreen extends StatelessWidget {
             children: [
               SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(children: [const SizedBox(height: 48)]),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 48),
+
+                    Image.asset('assets/images/nike.png', height: 24),
+                    const SizedBox(height: 24),
+
+                    const Text(
+                      'BECOME A NIKE\nMEMBER',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    Text(
+                      'Create your Nike Member profile and get first access to the very best of Nike products, inspiration and community.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
               Positioned(
                 top: 8,
