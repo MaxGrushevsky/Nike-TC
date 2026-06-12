@@ -85,6 +85,53 @@ class JoinScreen extends StatelessWidget {
                         border: OutlineInputBorder(),
                       ),
                     ),
+                    const SizedBox(height: 8),
+
+                    Text(
+                      'Get a Nike Member Reward every year on your Birthday.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    DropdownButtonFormField<String>(
+                      initialValue: 'Belarus',
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Belarus',
+                          child: Text('Belarus'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Poland',
+                          child: Text('Poland'),
+                        ),
+                      ],
+                      onChanged: (_) {},
+                    ),
+                    const SizedBox(height: 16),
+
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Checkbox(value: false, onChanged: (_) {}),
+                        Expanded(
+                          child: Text(
+                            'Sign up for emails to get updates from Nike on products, offers, workout guidance and your Member benefits',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade700,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
