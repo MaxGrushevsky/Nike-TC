@@ -186,6 +186,28 @@ class JoinScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
+
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                        ),
+                        children: const [
+                          TextSpan(text: 'Already a Member? '),
+                          TextSpan(
+                            text: 'Sign In.',
+                            style: TextStyle(
+                              color: Colors.black,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
