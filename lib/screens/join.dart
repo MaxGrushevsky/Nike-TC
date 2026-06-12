@@ -162,6 +162,30 @@ class JoinScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () {},
+                        child: const Text(
+                          'JOIN US',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
