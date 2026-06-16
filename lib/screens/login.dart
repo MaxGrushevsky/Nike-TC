@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/validators.dart';
+import '../widgets/auth_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,38 +16,6 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _emailError;
   String? _passwordError;
 
-  static final _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-
-  String? _validateEmail(String value) {
-    final trimmed = value.trim();
-
-    if (trimmed.isEmpty) {
-      return 'Please eneter a valid email address.';
-    }
-
-    if (trimmed.length > 255) {
-      return 'Email must be 255 character or less.';
-    }
-
-    if (!_emailRegex.hasMatch(trimmed)) {
-      return 'Please enter a valid email address.';
-    }
-
-    return null;
-  }
-
-  String? _validatePassword(String value) {
-    if (value.isEmpty) {
-      return 'Please enter a password.';
-    }
-
-    if (value.length > 255) {
-      return 'Password must be 255 characters or less.';
-    }
-
-    return null;
-  }
-
   bool get _isButtonEnabled {
     return _emailController.text.trim().isNotEmpty &&
         _passwordController.text.isNotEmpty;
@@ -57,8 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
 
     setState(() {
-      _emailError = _validateEmail(_emailController.text);
-      _passwordError = _validatePassword(_passwordController.text);
+      _emailError = Validators.email(_emailController.text);
+      _passwordError = Validators.loginPassword(_passwordController.text);
     });
 
     if (_emailError == null && _passwordError == null) {}
@@ -93,53 +63,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    TextField(
+                    AuthTextField(
                       controller: _emailController,
+                      labelText: 'Email address',
+                      errorText: _emailError,
+                      keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       onChanged: (_) {
                         setState(() {
-                          if (_emailError != null) {
-                            _emailError = null;
-                          }
+                          if (_emailError != null) _emailError = null;
                         });
                       },
-                      decoration: InputDecoration(
-                        labelText: 'Email address',
-                        border: OutlineInputBorder(),
-                        errorText: _emailError,
-                        errorBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                        focusedErrorBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16),
 
-                    TextField(
+                    AuthTextField(
                       controller: _passwordController,
+                      labelText: 'Password',
+                      errorText: _passwordError,
                       textInputAction: TextInputAction.next,
+                      obscureText: true,
                       onChanged: (_) {
                         setState(() {
-                          if (_passwordError != null) {
-                            _passwordError = null;
-                          }
+                          if (_passwordError != null) _passwordError = null;
                         });
                       },
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
-                        errorText: _passwordError,
-                        errorBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                        focusedErrorBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 8),
 

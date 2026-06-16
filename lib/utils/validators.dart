@@ -9,11 +9,13 @@ class Validators {
     }
     return null;
   }
+
   static String? loginPassword(String value) {
     if (value.isEmpty) return 'Please enter a password.';
     if (value.length > 255) return 'Password must be 255 characters or less.';
     return null;
   }
+
   static String? joinPassword(String value) {
     if (value.isEmpty) return 'Please enter a password.';
     if (value.length < 8) {
@@ -22,18 +24,23 @@ class Validators {
     if (value.length > 255) return 'Password must be 255 characters or less.';
     return null;
   }
+
   static String? firstName(String value) {
     final trimmed = value.trim();
     if (trimmed.isEmpty) return 'Please enter a valid first name.';
-    if (trimmed.length > 255) return 'First name must be 255 characters or less.';
+    if (trimmed.length > 255)
+      return 'First name must be 255 characters or less.';
     return null;
   }
+
   static String? lastName(String value) {
     final trimmed = value.trim();
     if (trimmed.isEmpty) return 'Please enter a valid last name.';
-    if (trimmed.length > 255) return 'Last name must be 255 characters or less.';
+    if (trimmed.length > 255)
+      return 'Last name must be 255 characters or less.';
     return null;
   }
+
   static String? dateOfBirth(String value) {
     final trimmed = value.trim();
     if (trimmed.isEmpty) return 'Please enter a valid date of birth.';
