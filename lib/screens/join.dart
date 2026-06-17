@@ -1,7 +1,78 @@
 import 'package:flutter/material.dart';
+import '../utils/validators.dart';
+import '../widgets/auth_text_field.dart';
+import 'login.dart';
 
-class JoinScreen extends StatelessWidget {
+class JoinScreen extends StatefulWidget {
   const JoinScreen({super.key});
+
+  @override
+  State<JoinScreen> createState() => _JoinScreenState();
+}
+
+class _JoinScreenState extends State<JoinScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _dobController = TextEditingController();
+
+  String? _emailError;
+  String? _passwordError;
+  String? _firstNameError;
+  String? _lastNameError;
+  String? _dobError;
+
+  String? _selectedCountry = 'Belarus';
+  bool _emailOptIn = false;
+
+  bool get _isButtonEnabled {
+    return _emailController.text.trim().isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _firstNameController.text.trim().isNotEmpty &&
+        _lastNameController.text.trim().isNotEmpty &&
+        _dobController.text.trim().isNotEmpty;
+  }
+
+  double get _buttonOpacity => _isButtonEnabled ? 1.0 : 0.5;
+
+  void _onJoinUs() {
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _emailError = Validators.email(_emailController.text);
+      _passwordError = Validators.joinPassword(_passwordController.text);
+      _firstNameError = Validators.firstName(_firstNameController.text);
+      _lastNameError = Validators.lastName(_lastNameController.text);
+      _dobError = Validators.dateOfBirth(_dobController.text);
+    });
+
+    if (_emailError == null &&
+        _passwordError == null &&
+        _firstNameError == null &&
+        _lastNameError == null &&
+        _dobError == null) {
+    }
+  }
+
+  void _openLogin() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => const LoginScreen(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _dobController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +92,6 @@ class JoinScreen extends StatelessWidget {
 
                     Image.asset('assets/images/nike.png', height: 24),
                     const SizedBox(height: 24),
-
                     const Text(
                       'BECOME A NIKE\nMEMBER',
                       textAlign: TextAlign.center,
@@ -33,7 +103,6 @@ class JoinScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-
                     Text(
                       'Create your Nike Member profile and get first access to the very best of Nike products, inspiration and community.',
                       textAlign: TextAlign.center,
@@ -45,48 +114,72 @@ class JoinScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Email address',
-                        border: OutlineInputBorder(),
-                      ),
+                    AuthTextField(
+                      controller: _emailController,
+                      labelText: 'Email address',
+                      errorText: _emailError,
                       keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (_) {
+                        setState(() {
+                          if (_emailError != null) _emailError = null;
+                        });
+                      },
                     ),
                     const SizedBox(height: 16),
 
-                    TextField(
+                    AuthTextField(
+                      controller: _passwordController,
+                      labelText: 'Password',
+                      errorText: _passwordError,
                       obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
-                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (_) {
+                        setState(() {
+                          if (_passwordError != null) _passwordError = null;
+                        });
+                      },
                     ),
                     const SizedBox(height: 16),
 
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'First Name',
-                        border: OutlineInputBorder(),
-                      ),
+                    AuthTextField(
+                      controller: _firstNameController,
+                      labelText: 'First Name',
+                      errorText: _firstNameError,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (_) {
+                        setState(() {
+                          if (_firstNameError != null) _firstNameError = null;
+                        });
+                      },
                     ),
                     const SizedBox(height: 16),
 
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Last Name',
-                        border: OutlineInputBorder(),
-                      ),
+                    AuthTextField(
+                      controller: _lastNameController,
+                      labelText: 'Last Name',
+                      errorText: _lastNameError,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (_) {
+                        setState(() {
+                          if (_lastNameError != null) _lastNameError = null;
+                        });
+                      },
                     ),
                     const SizedBox(height: 16),
 
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Date of Birth',
-                        border: OutlineInputBorder(),
-                      ),
+                    AuthTextField(
+                      controller: _dobController,
+                      labelText: 'Date of Birth',
+                      errorText: _dobError,
+                      textInputAction: TextInputAction.done,
+                      onChanged: (_) {
+                        setState(() {
+                          if (_dobError != null) _dobError = null;
+                        });
+                      },
                     ),
                     const SizedBox(height: 8),
-
                     Text(
                       'Get a Nike Member Reward every year on your Birthday.',
                       style: TextStyle(
@@ -97,7 +190,7 @@ class JoinScreen extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     DropdownButtonFormField<String>(
-                      initialValue: 'Belarus',
+                      initialValue: _selectedCountry,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                       ),
@@ -111,14 +204,21 @@ class JoinScreen extends StatelessWidget {
                           child: Text('Poland'),
                         ),
                       ],
-                      onChanged: (_) {},
+                      onChanged: (value) {
+                        setState(() => _selectedCountry = value);
+                      },
                     ),
                     const SizedBox(height: 16),
 
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Checkbox(value: false, onChanged: (_) {}),
+                        Checkbox(
+                          value: _emailOptIn,
+                          onChanged: (value) {
+                            setState(() => _emailOptIn = value ?? false);
+                          },
+                        ),
                         Expanded(
                           child: Text(
                             'Sign up for emails to get updates from Nike on products, offers, workout guidance and your Member benefits',
@@ -167,15 +267,21 @@ class JoinScreen extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                          backgroundColor: Colors.black.withValues(
+                            alpha: _buttonOpacity,
+                          ),
                           foregroundColor: Colors.white,
+                          disabledBackgroundColor: Colors.black.withValues(
+                            alpha: 0.5,
+                          ),
+                          disabledForegroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
                           elevation: 0,
                         ),
-                        onPressed: () {},
+                        onPressed: _isButtonEnabled ? _onJoinUs : null,
                         child: const Text(
                           'JOIN US',
                           style: TextStyle(
@@ -194,14 +300,19 @@ class JoinScreen extends StatelessWidget {
                           color: Colors.grey.shade600,
                           fontSize: 13,
                         ),
-                        children: const [
-                          TextSpan(text: 'Already a Member? '),
-                          TextSpan(
-                            text: 'Sign In.',
-                            style: TextStyle(
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.w600,
+                        children: [
+                          const TextSpan(text: 'Already a Member? '),
+                          WidgetSpan(
+                            child: GestureDetector(
+                              onTap: _openLogin,
+                              child: const Text(
+                                'Sign In.',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -211,6 +322,7 @@ class JoinScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
               Positioned(
                 top: 8,
                 right: 8,
