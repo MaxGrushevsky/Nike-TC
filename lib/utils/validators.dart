@@ -1,3 +1,5 @@
+import 'password_strength.dart';
+
 class Validators {
   static final _emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
   static String? email(String value) {
@@ -13,15 +15,18 @@ class Validators {
   static String? loginPassword(String value) {
     if (value.isEmpty) return 'Please enter a password.';
     if (value.length > 255) return 'Password must be 255 characters or less.';
+    if (!PasswordStrength.meetsMinimum(value)) {
+      return 'Password does not meet minimum requirements.';
+    }
     return null;
   }
 
   static String? joinPassword(String value) {
     if (value.isEmpty) return 'Please enter a password.';
-    if (value.length < 8) {
+    if (value.length > 255) return 'Password must be 255 characters or less.';
+    if (!PasswordStrength.meetsMinimum(value)) {
       return 'Password does not meet minimum requirements.';
     }
-    if (value.length > 255) return 'Password must be 255 characters or less.';
     return null;
   }
 
