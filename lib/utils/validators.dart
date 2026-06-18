@@ -15,9 +15,6 @@ class Validators {
   static String? loginPassword(String value) {
     if (value.isEmpty) return 'Please enter a password.';
     if (value.length > 255) return 'Password must be 255 characters or less.';
-    if (!PasswordStrength.meetsMinimum(value)) {
-      return 'Password does not meet minimum requirements.';
-    }
     return null;
   }
 
