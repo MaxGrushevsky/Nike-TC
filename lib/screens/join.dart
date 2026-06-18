@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import '../utils/link_launcher.dart';
 import '../utils/validators.dart';
 import '../widgets/auth_text_field.dart';
-import '../widgets/password_strength_bar.dart';
+import '../widgets/password_field_with_strength.dart';
 import 'login.dart';
 
 class JoinScreen extends StatefulWidget {
@@ -64,14 +66,15 @@ class _JoinScreenState extends State<JoinScreen> {
     );
   }
 
+  late final TapGestureRecognizer _privacyRecognizer;
+  late final TapGestureRecognizer _termsRecognizer;
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _dobController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = LinkLauncher.openPrivacyPolicy;
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = LinkLauncher.openTermsOfUse;
   }
 
   @override
@@ -128,21 +131,14 @@ class _JoinScreenState extends State<JoinScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    AuthTextField(
+                    PasswordFieldWithStrength(
                       controller: _passwordController,
-                      labelText: 'Password',
                       errorText: _passwordError,
-                      obscureText: true,
-                      textInputAction: TextInputAction.next,
-                      onChanged: (_) {
-                        setState(() {
-                          if (_passwordError != null) _passwordError = null;
-                        });
-                      },
+                      onChanged: (_) => setState(() {
+                        if (_passwordError != null) _passwordError = null;
+                      }),
                     ),
                     const SizedBox(height: 16),
-                    PasswordStrengthBar(password: _passwordController.text),
-                    const SizedBox(height: 8),
 
                     AuthTextField(
                       controller: _firstNameController,
@@ -243,22 +239,26 @@ class _JoinScreenState extends State<JoinScreen> {
                           fontSize: 12,
                           height: 1.5,
                         ),
-                        children: const [
-                          TextSpan(
+                        children: [
+                          const TextSpan(
                             text: 'By creating an account, you agree to\n',
                           ),
                           TextSpan(
                             text: 'Privacy Policy',
-                            style: TextStyle(
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
+                              color: Colors.grey,
                             ),
+                            recognizer: _privacyRecognizer,
                           ),
-                          TextSpan(text: ' and '),
+                          const TextSpan(text: ' and '),
                           TextSpan(
                             text: 'Terms of Use',
-                            style: TextStyle(
+                            style: const TextStyle(
                               decoration: TextDecoration.underline,
+                              color: Colors.grey,
                             ),
+                            recognizer: _termsRecognizer,
                           ),
                         ],
                       ),
@@ -338,5 +338,17 @@ class _JoinScreenState extends State<JoinScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _dobController.dispose();
+    _privacyRecognizer.dispose();
+    _termsRecognizer.dispose();
+    super.dispose();
   }
 }
