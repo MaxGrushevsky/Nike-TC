@@ -142,6 +142,7 @@ class _JoinScreenState extends State<JoinScreen> {
                     ),
                     const SizedBox(height: 16),
                     PasswordStrengthBar(password: _passwordController.text),
+                    const SizedBox(height: 8),
 
                     AuthTextField(
                       controller: _firstNameController,

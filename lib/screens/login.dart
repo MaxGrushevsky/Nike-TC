@@ -92,6 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     PasswordStrengthBar(password: _passwordController.text),
+                    const SizedBox(height: 8),
 
                     Align(
                       alignment: Alignment.centerRight,
