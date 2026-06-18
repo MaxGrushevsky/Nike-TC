@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/validators.dart';
 import '../widgets/auth_text_field.dart';
+import '../widgets/password_strength_bar.dart';
 import 'login.dart';
 
 class JoinScreen extends StatefulWidget {
@@ -51,8 +52,7 @@ class _JoinScreenState extends State<JoinScreen> {
         _passwordError == null &&
         _firstNameError == null &&
         _lastNameError == null &&
-        _dobError == null) {
-    }
+        _dobError == null) {}
   }
 
   void _openLogin() {
@@ -141,6 +141,8 @@ class _JoinScreenState extends State<JoinScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+                    PasswordStrengthBar(password: _passwordController.text),
+                    const SizedBox(height: 8),
 
                     AuthTextField(
                       controller: _firstNameController,

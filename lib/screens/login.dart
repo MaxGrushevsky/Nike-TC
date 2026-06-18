@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/validators.dart';
 import '../widgets/auth_text_field.dart';
+import '../widgets/password_strength_bar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
