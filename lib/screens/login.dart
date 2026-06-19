@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import '../utils/validators.dart';
+import '../utils/link_launcher.dart';
 import '../widgets/auth_text_field.dart';
-import '../widgets/password_strength_bar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,6 +34,18 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (_emailError == null && _passwordError == null) {}
+  }
+
+  late final TapGestureRecognizer _privacyRecognizer;
+  late final TapGestureRecognizer _termsRecognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = LinkLauncher.openPrivacyPolicy;
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = LinkLauncher.openTermsOfUse;
   }
 
   @override
@@ -118,14 +131,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: 'Privacy Policy',
                             style: const TextStyle(
                               decoration: TextDecoration.underline,
+                              color: Colors.grey,
                             ),
+                            recognizer: _privacyRecognizer,
                           ),
                           const TextSpan(text: ' and '),
                           TextSpan(
                             text: 'Terms of Use',
                             style: const TextStyle(
                               decoration: TextDecoration.underline,
+                              color: Colors.grey,
                             ),
+                            recognizer: _termsRecognizer,
                           ),
                         ],
                       ),
@@ -206,6 +223,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _privacyRecognizer.dispose();
+    _termsRecognizer.dispose();
     super.dispose();
   }
 }
