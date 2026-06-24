@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'screens/welcome.dart';
+
+import 'navigation/app_route_observer.dart';
+import 'router.dart';
+
+final AppRouteObserver appRouteObserver = AppRouteObserver();
 
 void main() {
   runApp(const MainApp());
@@ -12,7 +16,9 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Oswald'),
-      home: WelcomeScreen(),
+      initialRoute: AppRouter.welcome,
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      navigatorObservers: [appRouteObserver],
     );
   }
 }

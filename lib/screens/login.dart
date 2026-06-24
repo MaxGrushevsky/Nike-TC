@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import '../router.dart';
 import '../utils/validators.dart';
 import '../utils/link_launcher.dart';
 import '../widgets/auth_text_field.dart';
@@ -33,7 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordError = Validators.loginPassword(_passwordController.text);
     });
 
-    if (_emailError == null && _passwordError == null) {}
+    if (_emailError == null && _passwordError == null) {
+      AppRouter.replaceWithDashboard(context);
+    }
   }
 
   late final TapGestureRecognizer _privacyRecognizer;
