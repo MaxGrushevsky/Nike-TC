@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+
+import '../base/base_page.dart';
 import '../router.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends BasePage {
   const WelcomeScreen({super.key});
+
+  @override
+  String get pageTitle => 'Welcome';
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,6 @@ class WelcomeScreen extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -28,14 +32,12 @@ class WelcomeScreen extends StatelessWidget {
               ],
             ),
           ),
-
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
                   const Spacer(),
-
                   Row(
                     children: [
                       Expanded(
