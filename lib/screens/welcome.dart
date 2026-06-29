@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'join.dart';
-import 'login.dart';
+import '../router.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -48,14 +47,7 @@ class WelcomeScreen extends StatelessWidget {
                             shape: const StadiumBorder(),
                             elevation: 0,
                           ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                fullscreenDialog: true,
-                                builder: (context) => const JoinScreen(),
-                              ),
-                            );
-                          },
+                          onPressed: () => AppRouter.openJoin(context),
                           child: const Text(
                             'Join',
                             style: TextStyle(
@@ -77,14 +69,7 @@ class WelcomeScreen extends StatelessWidget {
                             ),
                             shape: const StadiumBorder(),
                           ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                fullscreenDialog: true,
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
-                          },
+                          onPressed: () => AppRouter.openLogin(context),
                           child: const Text(
                             'Log In',
                             style: TextStyle(

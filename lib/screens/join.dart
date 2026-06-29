@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import '../router.dart';
 import '../utils/link_launcher.dart';
 import '../utils/validators.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/password_field_with_strength.dart';
-import 'login.dart';
 
 class JoinScreen extends StatefulWidget {
   const JoinScreen({super.key});
@@ -58,12 +58,7 @@ class _JoinScreenState extends State<JoinScreen> {
   }
 
   void _openLogin() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) => const LoginScreen(),
-      ),
-    );
+    AppRouter.openLogin(context);
   }
 
   late final TapGestureRecognizer _privacyRecognizer;
