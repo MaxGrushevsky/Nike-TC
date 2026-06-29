@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class DashboardPage extends StatelessWidget {
+import '../base/workouts_base_page.dart';
+
+class DashboardPage extends WorkoutsBasePage {
   const DashboardPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-      ),
-      body: const Center(
-        child: Text('Workouts'),
-      ),
+  String get pageTitle => 'Dashboard';
+
+  @override
+  Widget buildBody(BuildContext context) {
+    return const Center(
+      child: Text('Workouts'),
     );
   }
 }
