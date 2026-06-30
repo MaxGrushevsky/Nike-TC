@@ -54,7 +54,9 @@ class _JoinScreenState extends State<JoinScreen> {
         _passwordError == null &&
         _firstNameError == null &&
         _lastNameError == null &&
-        _dobError == null) {}
+        _dobError == null) {
+      AppRouter.replaceWithDashboard(context);
+    }
   }
 
   void _openLogin() {
