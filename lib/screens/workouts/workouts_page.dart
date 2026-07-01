@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../router.dart';
 import '../../widgets/workouts_tab_bar_delegate.dart';
-import 'workouts_tab_content.dart';
+import 'browse_tab.dart';
+import 'collections_tab.dart';
+import 'for_you_tab.dart';
+import 'plans_tab.dart';
 
 enum WorkoutsTab {
   forYou('For You'),
@@ -40,9 +44,15 @@ class _WorkoutsPageState extends State<WorkoutsPage>
     super.dispose();
   }
 
-  void _onSavedWorkoutsTap() {}
+  void _onSavedWorkoutsTap() {
+    AppRouter.openSavedWorkouts(context);
+  }
 
   void _onProfileTap() {}
+
+  void _openCollectionsTab() {
+    _tabController.animateTo(WorkoutsTab.collections.index);
+  }
 
   Widget _buildProfileButton() {
     return TextButton(
@@ -123,6 +133,19 @@ class _WorkoutsPageState extends State<WorkoutsPage>
     );
   }
 
+  Widget _buildTabContent(WorkoutsTab tab) {
+    switch (tab) {
+      case WorkoutsTab.forYou:
+        return ForYouTab(onViewAllCollections: _openCollectionsTab);
+      case WorkoutsTab.browse:
+        return const BrowseTab();
+      case WorkoutsTab.collections:
+        return const CollectionsTab();
+      case WorkoutsTab.plans:
+        return const PlansTab();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,9 +161,7 @@ class _WorkoutsPageState extends State<WorkoutsPage>
         },
         body: TabBarView(
           controller: _tabController,
-          children: WorkoutsTab.values
-              .map((tab) => WorkoutsTabContent(title: tab.label))
-              .toList(),
+          children: WorkoutsTab.values.map(_buildTabContent).toList(),
         ),
       ),
     );
