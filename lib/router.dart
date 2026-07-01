@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'custom_animation_route.dart';
-import 'screens/dashboard.dart';
 import 'screens/join.dart';
 import 'screens/login.dart';
+import 'screens/main_tab_page.dart';
 import 'screens/welcome.dart';
 
 class AppRouter {
@@ -34,9 +34,11 @@ class AppRouter {
           builder: (_) => const JoinScreen(),
         );
       case dashboard:
+        final initialTab =
+            settings.arguments as int? ?? MainTabPage.workoutsTabIndex;
         return CustomAnimationRoute(
           settings: settings,
-          builder: (_) => const DashboardPage(),
+          builder: (_) => MainTabPage(initialTab: initialTab),
         );
       default:
         return CustomAnimationRoute(
@@ -55,6 +57,8 @@ class AppRouter {
   }
 
   static void replaceWithDashboard(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed(dashboard);
+    Navigator.of(
+      context,
+    ).pushReplacementNamed(dashboard, arguments: MainTabPage.workoutsTabIndex);
   }
 }
