@@ -15,7 +15,12 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(fontFamily: 'Oswald'),
+      theme: ThemeData(
+        textTheme: Typography.blackMountainView.apply(fontFamily: 'Oswald'),
+        primaryTextTheme: Typography.blackMountainView.apply(
+          fontFamily: 'Oswald',
+        ),
+      ),
       initialRoute: AppRouter.welcome,
       onGenerateRoute: AppRouter.onGenerateRoute,
       navigatorObservers: [appRouteObserver],
