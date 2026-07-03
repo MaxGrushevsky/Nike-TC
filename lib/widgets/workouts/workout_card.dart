@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/workout_item.dart';
+import '../../providers/workouts_provider.dart';
 
-class WorkoutCard extends StatefulWidget {
+class WorkoutCard extends StatelessWidget {
   const WorkoutCard({super.key, required this.item});
 
   final WorkoutItem item;
-
-  @override
-  State<WorkoutCard> createState() => _WorkoutCardState();
-}
-
-class _WorkoutCardState extends State<WorkoutCard> {
-  bool _isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +23,7 @@ class _WorkoutCardState extends State<WorkoutCard> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(widget.item.imageAsset, fit: BoxFit.cover),
+            Image.asset(item.imageAsset, fit: BoxFit.cover),
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -42,17 +37,22 @@ class _WorkoutCardState extends State<WorkoutCard> {
             Positioned(
               top: 8,
               right: 8,
-              child: Material(
-                color: Colors.white.withValues(alpha: 0.9),
-                shape: const CircleBorder(),
-                child: IconButton(
-                  icon: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorite ? Colors.red : Colors.black,
-                    size: 20,
-                  ),
-                  onPressed: () => setState(() => _isFavorite = !_isFavorite),
-                ),
+              child: Consumer<WorkoutsProvider>(
+                builder: (context, provider, _) {
+                  final isFavorite = provider.isFavorite(item.id);
+                  return Material(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.black,
+                        size: 20,
+                      ),
+                      onPressed: () => provider.toggleFavorite(item.id),
+                    ),
+                  );
+                },
               ),
             ),
             Positioned(
@@ -64,7 +64,9 @@ class _WorkoutCardState extends State<WorkoutCard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    widget.item.title,
+                    item.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -73,7 +75,9 @@ class _WorkoutCardState extends State<WorkoutCard> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.item.subtitle,
+                    item.subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.85),
                       fontSize: 13,

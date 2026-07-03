@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'api/exercises_api.dart';
+import 'core/dio_client.dart';
 import 'navigation/app_route_observer.dart';
+import 'providers/workouts_provider.dart';
 import 'router.dart';
 
 final AppRouteObserver appRouteObserver = AppRouteObserver();
 
 void main() {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) =>
+          WorkoutsProvider(ExercisesApi(createDio()))..loadWorkouts(),
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {

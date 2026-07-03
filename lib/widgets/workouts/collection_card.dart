@@ -36,6 +36,8 @@ class CollectionCard extends StatelessWidget {
                 children: [
                   Text(
                     item.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
