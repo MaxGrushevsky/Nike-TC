@@ -7,7 +7,7 @@ part 'exercises_api.g.dart';
 
 @RestApi()
 abstract class ExercisesApi {
-  factory ExercisesApi(Dio dio, {String baseUrl}) = _ExercisesApi;
+  factory ExercisesApi(Dio dio) = _ExercisesApi;
 
   @GET('/v1/exercises')
   Future<List<ExerciseDto>> getExercises({

@@ -56,23 +56,16 @@ class WorkoutsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final results = await Future.wait([
-        _fetch(type: 'strength', difficulty: 'intermediate'),
-        _fetch(type: 'strength', difficulty: 'beginner'),
-        _fetch(type: 'cardio'),
-        _fetch(muscle: 'shoulders'),
-        _fetch(type: 'strength', difficulty: 'expert'),
-        _fetch(type: 'stretching', difficulty: 'beginner'),
-        _fetchCollections(),
-      ]);
-
-      newWorkouts = results[0] as List<WorkoutItem>;
-      topPicks = results[1] as List<WorkoutItem>;
-      browseWorkouts = results[2] as List<WorkoutItem>;
-      browseMuscleGroup = results[3] as List<WorkoutItem>;
-      plansFourWeek = results[4] as List<WorkoutItem>;
-      plansBeginner = results[5] as List<WorkoutItem>;
-      collectionWorkouts = results[6] as Map<String, List<WorkoutItem>>;
+      newWorkouts = await _fetch(
+        type: 'strength',
+        difficulty: 'intermediate',
+      );
+      topPicks = await _fetch(type: 'strength', difficulty: 'beginner');
+      browseWorkouts = await _fetch(type: 'cardio');
+      browseMuscleGroup = await _fetch(muscle: 'shoulders');
+      plansFourWeek = await _fetch(type: 'strength', difficulty: 'expert');
+      plansBeginner = await _fetch(type: 'stretching', difficulty: 'beginner');
+      collectionWorkouts = await _fetchCollections();
 
       collections = _collectionMuscles.entries.toList().asMap().entries.map((
         entry,
@@ -113,14 +106,13 @@ class WorkoutsProvider extends ChangeNotifier {
   }
 
   Future<Map<String, List<WorkoutItem>>> _fetchCollections() async {
-    final entries = await Future.wait(
-      _collectionMuscles.entries.map((entry) async {
-        final workouts = await _fetch(muscle: entry.value);
-        return MapEntry(entry.key, workouts);
-      }),
-    );
+    final collections = <String, List<WorkoutItem>>{};
 
-    return Map.fromEntries(entries);
+    for (final entry in _collectionMuscles.entries) {
+      collections[entry.key] = await _fetch(muscle: entry.value);
+    }
+
+    return collections;
   }
 
   WorkoutItem _toWorkoutItem(ExerciseDto exercise, int index) {

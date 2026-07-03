@@ -1,16 +1,17 @@
 import 'package:dio/dio.dart';
 
-import '../config/api_secrets.dart';
-
-const _baseUrl = 'https://api.api-ninjas.com';
+import '../config/api_config.dart';
 
 Dio createDio() {
   return Dio(
     BaseOptions(
-      baseUrl: _baseUrl,
+      baseUrl: ApiConfig.baseUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
-      headers: {'X-Api-Key': apiNinjasKey, 'Accept': 'application/json'},
+      headers: {
+        'X-Api-Key': ApiConfig.apiKey,
+        'Accept': 'application/json',
+      },
     ),
   );
 }
