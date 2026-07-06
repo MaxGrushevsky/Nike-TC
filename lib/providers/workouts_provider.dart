@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 
 import '../api/exercises_api.dart';
@@ -79,8 +80,13 @@ class WorkoutsProvider extends ChangeNotifier {
           imageAsset: _fallbackImages[entry.key % _fallbackImages.length],
         );
       }).toList();
-    } catch (error) {
+    } catch (error, stackTrace) {
       errorMessage = _mapError(error);
+      await FirebaseCrashlytics.instance.recordError(
+        error,
+        stackTrace,
+        reason: 'Failed to load workouts',
+      );
     } finally {
       isLoading = false;
       notifyListeners();
