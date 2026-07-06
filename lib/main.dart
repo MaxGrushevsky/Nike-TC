@@ -1,16 +1,21 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'api/exercises_api.dart';
 import 'core/dio_client.dart';
+import 'core/firebase_bootstrap.dart';
 import 'navigation/app_route_observer.dart';
 import 'providers/workouts_provider.dart';
 import 'router.dart';
 
 final AppRouteObserver appRouteObserver = AppRouteObserver();
+final FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.instance;
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await bootstrapFirebase();
 
   runApp(
     ChangeNotifierProvider(
@@ -35,7 +40,10 @@ class MainApp extends StatelessWidget {
       ),
       initialRoute: AppRouter.welcome,
       onGenerateRoute: AppRouter.onGenerateRoute,
-      navigatorObservers: [appRouteObserver],
+      navigatorObservers: [
+        appRouteObserver,
+        FirebaseAnalyticsObserver(analytics: firebaseAnalytics),
+      ],
     );
   }
 }

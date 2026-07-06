@@ -1,6 +1,9 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import '../router.dart';
+import '../utils/auth_errors.dart';
 import '../utils/link_launcher.dart';
 import '../utils/validators.dart';
 import '../widgets/auth_text_field.dart';
@@ -25,6 +28,8 @@ class _JoinScreenState extends State<JoinScreen> {
   String? _firstNameError;
   String? _lastNameError;
   String? _dobError;
+  String? _authError;
+  bool _isLoading = false;
 
   String? _selectedCountry = 'Belarus';
   bool _emailOptIn = false;
@@ -39,7 +44,7 @@ class _JoinScreenState extends State<JoinScreen> {
 
   double get _buttonOpacity => _isButtonEnabled ? 1.0 : 0.5;
 
-  void _onJoinUs() {
+  Future<void> _onJoinUs() async {
     FocusScope.of(context).unfocus();
 
     setState(() {
@@ -48,14 +53,40 @@ class _JoinScreenState extends State<JoinScreen> {
       _firstNameError = Validators.firstName(_firstNameController.text);
       _lastNameError = Validators.lastName(_lastNameController.text);
       _dobError = Validators.dateOfBirth(_dobController.text);
+      _authError = null;
     });
 
-    if (_emailError == null &&
-        _passwordError == null &&
-        _firstNameError == null &&
-        _lastNameError == null &&
-        _dobError == null) {
+    if (_emailError != null ||
+        _passwordError != null ||
+        _firstNameError != null ||
+        _lastNameError != null ||
+        _dobError != null) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
+
+      await credential.user?.updateDisplayName(
+        '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}',
+      );
+      await FirebaseAnalytics.instance.logSignUp(signUpMethod: 'email');
+
+      if (!mounted) return;
       AppRouter.replaceWithDashboard(context);
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) return;
+      setState(() => _authError = authErrorMessage(error));
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -260,6 +291,14 @@ class _JoinScreenState extends State<JoinScreen> {
                         ],
                       ),
                     ),
+                    if (_authError != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        _authError!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red, fontSize: 13),
+                      ),
+                    ],
                     const SizedBox(height: 24),
 
                     SizedBox(
@@ -280,14 +319,25 @@ class _JoinScreenState extends State<JoinScreen> {
                           ),
                           elevation: 0,
                         ),
-                        onPressed: _isButtonEnabled ? _onJoinUs : null,
-                        child: const Text(
-                          'JOIN US',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
-                          ),
-                        ),
+                        onPressed: _isButtonEnabled && !_isLoading
+                            ? _onJoinUs
+                            : null,
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'JOIN US',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 24),

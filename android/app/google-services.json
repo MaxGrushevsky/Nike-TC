@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "764352828097",
+    "project_id": "nike-ts-max",
+    "storage_bucket": "nike-ts-max.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764352828097:android:d68133b204e9b009a8ba40",
+        "android_client_info": {
+          "package_name": "com.example.nike_tc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5QxkjUUfSdubIz9WHHkZBj4eNlkjj53o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
