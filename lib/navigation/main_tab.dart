@@ -12,6 +12,7 @@ enum MainTab {
   inbox;
 
   static const int workoutsTabIndex = 2;
+  static const int inboxTabIndex = 3;
 }
 
 class MainTabItem {

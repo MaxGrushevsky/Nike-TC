@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'custom_animation_route.dart';
+import 'screens/inbox/inbox_detail_page.dart';
+import 'models/inbox_message.dart';
 import 'screens/join.dart';
 import 'screens/login.dart';
 import 'screens/main_tab_page.dart';
@@ -15,6 +17,7 @@ class AppRouter {
   static const join = '/join';
   static const dashboard = '/dashboard';
   static const savedWorkouts = '/saved-workouts';
+  static const inboxDetail = '/inbox-detail';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -47,6 +50,12 @@ class AppRouter {
           settings: settings,
           builder: (_) => const SavedWorkoutsPage(),
         );
+      case inboxDetail:
+        final message = settings.arguments! as InboxMessage;
+        return CustomAnimationRoute(
+          settings: settings,
+          builder: (_) => InboxDetailPage(message: message),
+        );
       default:
         return CustomAnimationRoute(
           settings: settings,
@@ -71,5 +80,12 @@ class AppRouter {
 
   static Future<void> openSavedWorkouts(BuildContext context) {
     return Navigator.of(context).pushNamed(savedWorkouts);
+  }
+
+  static Future<void> openInboxDetail(
+    BuildContext context,
+    InboxMessage message,
+  ) {
+    return Navigator.of(context).pushNamed(inboxDetail, arguments: message);
   }
 }

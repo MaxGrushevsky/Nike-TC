@@ -6,6 +6,7 @@ class MainTabPage extends StatefulWidget {
   const MainTabPage({super.key, this.initialTab = MainTab.workoutsTabIndex});
 
   static const int workoutsTabIndex = MainTab.workoutsTabIndex;
+  static const int inboxTabIndex = MainTab.inboxTabIndex;
 
   final int initialTab;
 
