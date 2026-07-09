@@ -65,6 +65,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _openJoin() {
+    AppRouter.openJoin(context);
+  }
+
   late final TapGestureRecognizer _privacyRecognizer;
   late final TapGestureRecognizer _termsRecognizer;
 
@@ -236,12 +240,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         children: [
                           const TextSpan(text: 'Not a Member? '),
-                          TextSpan(
-                            text: 'Join Us.',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.w600,
+                          WidgetSpan(
+                            child: GestureDetector(
+                              onTap: _openJoin,
+                              child: const Text(
+                                'Join Us.',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.black,
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ],

@@ -1,4 +1,4 @@
-import '../models/inbox_message.dart';
+import '../../models/inbox_message.dart';
 
 abstract final class InboxMockData {
   InboxMockData._();
@@ -56,8 +56,8 @@ abstract final class InboxMockData {
     ),
   ];
 
-  static Future<List<InboxMessage>> refresh() async {
+  static Future<List<InboxMessage>> fetchMessages() async {
     await Future.delayed(const Duration(milliseconds: 1200));
-    return List<InboxMessage>.unmodifiable(messages);
+    return List<InboxMessage>.from(messages);
   }
 }
