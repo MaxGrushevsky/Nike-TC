@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 
 import '../config/api_config.dart';
+import 'mock_dio_interceptor.dart';
 
 Dio createDio() {
-  return Dio(
+  final dio = Dio(
     BaseOptions(
       baseUrl: ApiConfig.baseUrl,
       connectTimeout: const Duration(seconds: 15),
@@ -14,4 +15,7 @@ Dio createDio() {
       },
     ),
   );
+
+  dio.interceptors.add(MockDioInterceptor());
+  return dio;
 }
