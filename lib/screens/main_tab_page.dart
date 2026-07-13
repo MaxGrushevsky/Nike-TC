@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/activity/activity_bloc.dart';
+import '../bloc/activity/activity_event.dart';
 import '../navigation/main_tab.dart';
 import '../services/inbox_persistence_service.dart';
 import '../widgets/inbox/inbox_permissions_dialog.dart';
@@ -56,15 +59,18 @@ class _MainTabPageState extends State<MainTabPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: MainTabs.pages),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTap,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        items: MainTabs.navigationItems,
+    return BlocProvider(
+      create: (_) => ActivityBloc()..add(const ActivityStarted()),
+      child: Scaffold(
+        body: IndexedStack(index: _currentIndex, children: MainTabs.pages),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onTabTap,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.grey,
+          items: MainTabs.navigationItems,
+        ),
       ),
     );
   }
