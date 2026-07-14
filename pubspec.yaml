@@ -24,6 +24,10 @@ dependencies:
   webview_flutter_wkwebview: ^3.26.0
   webview_flutter_android: ^4.13.0
   shared_preferences: ^2.5.5
+  flutter_bloc: ^9.1.1
+  equatable: ^2.1.0
+  share_plus: ^13.2.0
+  image_picker: ^1.2.3
 
 dev_dependencies:
   flutter_test:

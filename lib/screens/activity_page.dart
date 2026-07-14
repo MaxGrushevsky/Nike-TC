@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../data/mock/activity_mock_data.dart';
+import '../bloc/activity/activity_bloc.dart';
+import '../bloc/activity/activity_event.dart';
+import '../bloc/activity/activity_state.dart';
 import '../models/activity_item.dart';
-import 'activity/activity_filter_page.dart';
+import '../router.dart';
+import '../utils/activity_formatters.dart';
 import 'activity/add_activity_page.dart';
+import 'activity/activity_filter_page.dart';
 
 enum ActivityTab {
   history('History'),
@@ -24,13 +29,10 @@ class ActivityPage extends StatefulWidget {
 class _ActivityPageState extends State<ActivityPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  late List<ActivityItem> _activities;
-  String _selectedFilter = ActivityMockData.filterOptions.first;
 
   @override
   void initState() {
     super.initState();
-    _activities = List<ActivityItem>.from(ActivityMockData.seedActivities);
     _tabController = TabController(length: ActivityTab.values.length, vsync: this);
   }
 
@@ -39,29 +41,6 @@ class _ActivityPageState extends State<ActivityPage>
     _tabController.dispose();
     super.dispose();
   }
-
-  List<ActivityItem> get _filteredActivities {
-    if (_selectedFilter == 'All Activity') {
-      return _sortedActivities;
-    }
-
-    return _sortedActivities
-        .where((activity) => activity.type == _selectedFilter)
-        .toList();
-  }
-
-  List<ActivityItem> get _sortedActivities {
-    final activities = List<ActivityItem>.from(_activities)
-      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
-    return activities;
-  }
-
-  int get _totalActivities => _filteredActivities.length;
-
-  int get _totalMinutes => _filteredActivities.fold<int>(
-        0,
-        (sum, activity) => sum + activity.durationInMinutes,
-      );
 
   Future<void> _openAddActivity() async {
     final activity = await Navigator.of(context).push<ActivityItem>(
@@ -72,100 +51,63 @@ class _ActivityPageState extends State<ActivityPage>
     );
 
     if (activity == null || !mounted) return;
-    setState(() => _activities = [..._activities, activity]);
+    context.read<ActivityBloc>().add(ActivityAdded(activity));
   }
 
-  Future<void> _openFilter() async {
+  Future<void> _openFilter(String selectedFilter) async {
     final filter = await ActivityFilterPage.show(
       context,
-      selectedFilter: _selectedFilter,
+      selectedFilter: selectedFilter,
     );
 
     if (filter == null || !mounted) return;
-    setState(() => _selectedFilter = filter);
-  }
-
-  Map<String, List<ActivityItem>> _groupActivitiesByMonth(
-    List<ActivityItem> activities,
-  ) {
-    final grouped = <String, List<ActivityItem>>{};
-
-    for (final activity in activities) {
-      final key = _monthYearLabel(activity.dateTime);
-      grouped.putIfAbsent(key, () => []).add(activity);
-    }
-
-    final sortedKeys = grouped.keys.toList()
-      ..sort((a, b) {
-        final aDate = grouped[a]!.first.dateTime;
-        final bDate = grouped[b]!.first.dateTime;
-        return bDate.compareTo(aDate);
-      });
-
-    return {for (final key in sortedKeys) key: grouped[key]!};
-  }
-
-  String _monthYearLabel(DateTime dateTime) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    return '${months[dateTime.month - 1]} ${dateTime.year}';
+    context.read<ActivityBloc>().add(ActivityFilterChanged(filter));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTopBar(),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Text(
-                'Activity',
-                style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
-              ),
-            ),
-            TabBar(
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.black,
-              dividerColor: Colors.transparent,
-              tabs: ActivityTab.values
-                  .map((tab) => Tab(text: tab.label))
-                  .toList(),
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _HistoryTab(
-                    totalActivities: _totalActivities,
-                    totalMinutes: _totalMinutes,
-                    selectedFilter: _selectedFilter,
-                    groupedActivities: _groupActivitiesByMonth(_filteredActivities),
-                    onFilterTap: _openFilter,
+    return BlocBuilder<ActivityBloc, ActivityState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTopBar(),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Text(
+                    'Activity',
+                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
                   ),
-                  const Center(child: Text('Achievements coming soon')),
-                ],
-              ),
+                ),
+                TabBar(
+                  controller: _tabController,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Colors.black,
+                  dividerColor: Colors.transparent,
+                  tabs: ActivityTab.values
+                      .map((tab) => Tab(text: tab.label))
+                      .toList(),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _HistoryTab(
+                        state: state,
+                        onFilterTap: () => _openFilter(state.selectedFilter),
+                      ),
+                      const Center(child: Text('Achievements coming soon')),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -175,7 +117,7 @@ class _ActivityPageState extends State<ActivityPage>
       child: Row(
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => AppRouter.openProfile(context),
             icon: const Icon(Icons.account_circle_outlined, size: 30),
           ),
           const Spacer(),
@@ -192,17 +134,11 @@ class _ActivityPageState extends State<ActivityPage>
 
 class _HistoryTab extends StatelessWidget {
   const _HistoryTab({
-    required this.totalActivities,
-    required this.totalMinutes,
-    required this.selectedFilter,
-    required this.groupedActivities,
+    required this.state,
     required this.onFilterTap,
   });
 
-  final int totalActivities;
-  final int totalMinutes;
-  final String selectedFilter;
-  final Map<String, List<ActivityItem>> groupedActivities;
+  final ActivityState state;
   final VoidCallback onFilterTap;
 
   @override
@@ -210,6 +146,7 @@ class _HistoryTab extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 500;
+        final groupedActivities = state.groupedActivities;
 
         return ListView(
           padding: const EdgeInsets.only(bottom: 24),
@@ -221,11 +158,11 @@ class _HistoryTab extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _StatBlock(
-                          value: '$totalActivities',
+                          value: '${state.totalActivities}',
                           label: 'Total Activities',
                         ),
                         _StatBlock(
-                          value: '$totalMinutes',
+                          value: '${state.totalMinutes}',
                           label: 'Total Minutes',
                         ),
                       ],
@@ -233,12 +170,12 @@ class _HistoryTab extends StatelessWidget {
                   : Column(
                       children: [
                         _StatBlock(
-                          value: '$totalActivities',
+                          value: '${state.totalActivities}',
                           label: 'Total Activities',
                         ),
                         const SizedBox(height: 20),
                         _StatBlock(
-                          value: '$totalMinutes',
+                          value: '${state.totalMinutes}',
                           label: 'Total Minutes',
                         ),
                       ],
@@ -253,7 +190,7 @@ class _HistoryTab extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        selectedFilter,
+                        state.selectedFilter,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -286,7 +223,9 @@ class _HistoryTab extends StatelessWidget {
                         ),
                       ),
                     ),
-                    ...entry.value.map((activity) => _ActivityListItem(activity: activity)),
+                    ...entry.value.map(
+                      (activity) => _ActivityListItem(activity: activity),
+                    ),
                   ],
                 );
               }),
@@ -328,80 +267,55 @@ class _ActivityListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateLabel = _formatActivityDate(activity.dateTime);
-    final durationLabel = _formatDuration(activity.duration);
+    final dateLabel = ActivityFormatters.listDateLabel(activity.dateTime);
+    final durationLabel = ActivityFormatters.durationLabel(activity.duration);
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
-                  borderRadius: BorderRadius.circular(8),
+        InkWell(
+          onTap: () => AppRouter.openActivityDetail(context, activity),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade800,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.bar_chart, color: Colors.white),
                 ),
-                child: const Icon(Icons.bar_chart, color: Colors.white),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      activity.type,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        activity.type,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$dateLabel $durationLabel',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
+                      const SizedBox(height: 4),
+                      Text(
+                        '$dateLabel $durationLabel',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         const Divider(height: 1),
       ],
     );
-  }
-
-  String _formatActivityDate(DateTime dateTime) {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-
-    final weekday = weekdays[dateTime.weekday - 1];
-    final month = months[dateTime.month - 1];
-    return '$weekday, ${dateTime.day} $month';
-  }
-
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
   }
 }

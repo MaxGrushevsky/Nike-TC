@@ -49,4 +49,22 @@ class Validators {
     if (trimmed.length > 255) return 'Date must be 255 characters or less.';
     return null;
   }
+
+  static String? optionalHometown(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+    if (trimmed.length > 255) {
+      return 'Hometown must be 255 characters or less.';
+    }
+    return null;
+  }
+
+  static String? optionalBio(String value) {
+    if (value.length > 150) {
+      return 'Bio must be 150 characters or less.';
+    }
+    return null;
+  }
 }
