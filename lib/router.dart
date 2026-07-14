@@ -7,6 +7,8 @@ import 'models/activity_item.dart';
 import 'models/inbox_message.dart';
 import 'screens/profile/edit_profile_page.dart';
 import 'screens/profile/profile_page.dart';
+import 'screens/profile/profile_pass_page.dart';
+import 'screens/profile/settings_page.dart';
 import 'models/user_profile.dart';
 import 'screens/join.dart';
 import 'screens/login.dart';
@@ -140,6 +142,22 @@ class AppRouter {
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (_) => EditProfilePage(profile: profile),
+      ),
+    );
+  }
+
+  static Future<void> openProfilePass(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const ProfilePassPage(),
+      ),
+    );
+  }
+
+  static Future<void> openSettings(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const SettingsPage(),
       ),
     );
   }

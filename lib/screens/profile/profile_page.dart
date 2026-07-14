@@ -85,7 +85,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                     onPressed: _openEditProfile,
                                   ),
                                   const SizedBox(height: 28),
-                                  _QuickLinksRow(isWide: constraints.maxWidth >= 500),
+                                  _QuickLinksRow(
+                                    isWide: constraints.maxWidth >= 500,
+                                    onPassTap: () => AppRouter.openProfilePass(context),
+                                    onSettingsTap: () => AppRouter.openSettings(context),
+                                  ),
                                   const SizedBox(height: 32),
                                   const Divider(height: 1),
                                   const SizedBox(height: 24),
@@ -184,20 +188,34 @@ class _OutlinedActionButton extends StatelessWidget {
 }
 
 class _QuickLinksRow extends StatelessWidget {
-  const _QuickLinksRow({required this.isWide});
+  const _QuickLinksRow({
+    required this.isWide,
+    required this.onPassTap,
+    required this.onSettingsTap,
+  });
 
   final bool isWide;
+  final VoidCallback onPassTap;
+  final VoidCallback onSettingsTap;
 
   @override
   Widget build(BuildContext context) {
     final children = [
-      const _QuickLinkItem(icon: Icons.card_membership_outlined, label: 'Pass'),
+      _QuickLinkItem(
+        icon: Icons.card_membership_outlined,
+        label: 'Pass',
+        onTap: onPassTap,
+      ),
       Container(
         width: 1,
         height: 56,
         color: Colors.grey.shade300,
       ),
-      const _QuickLinkItem(icon: Icons.settings_outlined, label: 'Settings'),
+      _QuickLinkItem(
+        icon: Icons.settings_outlined,
+        label: 'Settings',
+        onTap: onSettingsTap,
+      ),
     ];
 
     if (isWide) {
@@ -222,15 +240,20 @@ class _QuickLinksRow extends StatelessWidget {
 }
 
 class _QuickLinkItem extends StatelessWidget {
-  const _QuickLinkItem({required this.icon, required this.label});
+  const _QuickLinkItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String label;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
