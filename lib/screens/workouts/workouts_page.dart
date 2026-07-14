@@ -48,7 +48,9 @@ class _WorkoutsPageState extends State<WorkoutsPage>
     AppRouter.openSavedWorkouts(context);
   }
 
-  void _onProfileTap() {}
+  void _onProfileTap() {
+    AppRouter.openProfile(context);
+  }
 
   void _openCollectionsTab() {
     _tabController.animateTo(WorkoutsTab.collections.index);

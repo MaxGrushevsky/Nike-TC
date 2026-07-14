@@ -25,7 +25,9 @@ class _InboxPageState extends State<InboxPage> {
     _loadMessages();
   }
 
-  void _onProfileTap() {}
+  void _onProfileTap() {
+    AppRouter.openProfile(context);
+  }
 
   Future<void> _loadMessages() async {
     await _repository.seedIfNeeded();

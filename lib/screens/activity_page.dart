@@ -117,7 +117,7 @@ class _ActivityPageState extends State<ActivityPage>
       child: Row(
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => AppRouter.openProfile(context),
             icon: const Icon(Icons.account_circle_outlined, size: 30),
           ),
           const Spacer(),
