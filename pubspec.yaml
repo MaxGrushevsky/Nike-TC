@@ -28,6 +28,8 @@ dependencies:
   equatable: ^2.1.0
   share_plus: ^13.2.0
   image_picker: ^1.2.3
+  qr_flutter: ^4.1.0
+  screen_brightness: ^2.1.11
 
 dev_dependencies:
   flutter_test:
