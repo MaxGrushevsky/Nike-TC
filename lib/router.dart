@@ -7,6 +7,7 @@ import 'models/activity_item.dart';
 import 'models/inbox_message.dart';
 import 'screens/profile/edit_profile_page.dart';
 import 'screens/profile/profile_page.dart';
+import 'screens/profile/find_friends_page.dart';
 import 'screens/profile/profile_pass_page.dart';
 import 'screens/profile/settings_page.dart';
 import 'models/user_profile.dart';
@@ -128,7 +129,6 @@ class AppRouter {
   static Future<void> openProfile(BuildContext context) {
     return Navigator.of(context).push(
       MaterialPageRoute(
-        fullscreenDialog: true,
         builder: (_) => const ProfilePage(),
       ),
     );
@@ -140,7 +140,6 @@ class AppRouter {
   ) {
     return Navigator.of(context).push<UserProfile>(
       MaterialPageRoute(
-        fullscreenDialog: true,
         builder: (_) => EditProfilePage(profile: profile),
       ),
     );
@@ -158,6 +157,14 @@ class AppRouter {
     return Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => const SettingsPage(),
+      ),
+    );
+  }
+
+  static Future<void> openFindFriends(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const FindFriendsPage(),
       ),
     );
   }

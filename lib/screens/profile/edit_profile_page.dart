@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/user_profile.dart';
+import '../../utils/safe_navigator.dart';
 import '../../utils/validators.dart';
 import '../../widgets/profile/avatar_picker_sheet.dart';
 
@@ -25,6 +26,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String? _bioError;
   String? _avatarPath;
   bool _canSave = false;
+  bool _isPickingAvatar = false;
 
   @override
   void initState() {
@@ -73,9 +75,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _editAvatar() async {
-    final path = await pickAvatarImage(context);
-    if (path == null || !mounted) return;
-    setState(() => _avatarPath = path);
+    if (_isPickingAvatar) return;
+
+    setState(() => _isPickingAvatar = true);
+    try {
+      final path = await pickAvatarImage(context);
+      if (path == null || !mounted) return;
+      setState(() => _avatarPath = path);
+    } finally {
+      if (mounted) {
+        setState(() => _isPickingAvatar = false);
+      }
+    }
   }
 
   void _save() {
@@ -84,7 +95,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final hometown = _hometownController.text.trim();
     final bio = _bioController.text.trim();
 
-    Navigator.pop(
+    safePop(
       context,
       widget.profile.copyWith(
         firstName: _firstNameController.text.trim(),
@@ -102,8 +113,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         leading: TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => safePop(context),
           child: const Text('Cancel'),
         ),
         leadingWidth: 88,
