@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import '../utils/safe_navigator.dart';
 import '../router.dart';
 import '../utils/auth_errors.dart';
 import '../utils/validators.dart';
@@ -267,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 right: 8,
                 child: IconButton(
                   icon: const Icon(Icons.close, size: 28),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => safePopOrWelcome(context),
                 ),
               ),
             ],

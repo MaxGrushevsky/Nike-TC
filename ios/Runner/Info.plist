@@ -51,6 +51,8 @@
 	<string>Take a profile photo for your Nike Training Club account.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose a profile photo from your library.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This allows you to find and invite friends to Nike from your Contacts. Nike Training only sends emails from your Contacts to our servers to help you connect with other Nike members. None of the information from your Contacts is stored.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

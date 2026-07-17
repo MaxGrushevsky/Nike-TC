@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/user_profile.dart';
+import '../../utils/safe_navigator.dart';
 import '../../router.dart';
 import '../../services/profile_persistence_service.dart';
 import '../../widgets/profile/avatar_picker_sheet.dart';
@@ -107,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   const SizedBox(height: 16),
                                   _OutlinedActionButton(
                                     label: 'ADD FRIENDS',
-                                    onPressed: () {},
+                                    onPressed: () => AppRouter.openFindFriends(context),
                                   ),
                                   const SizedBox(height: 32),
                                 ],
@@ -144,7 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           const Spacer(),
           IconButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => safePop(context),
             icon: const Icon(Icons.close, size: 28),
           ),
         ],

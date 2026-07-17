@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import '../router.dart';
 import '../utils/auth_errors.dart';
 import '../utils/link_launcher.dart';
+import '../utils/safe_navigator.dart';
 import '../utils/validators.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/password_field_with_strength.dart';
@@ -377,7 +378,7 @@ class _JoinScreenState extends State<JoinScreen> {
                 right: 8,
                 child: IconButton(
                   icon: const Icon(Icons.close, size: 28),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => safePopOrWelcome(context),
                 ),
               ),
             ],

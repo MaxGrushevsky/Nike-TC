@@ -3,34 +3,35 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../utils/safe_navigator.dart';
+
 enum AvatarPickerSource {
   camera,
   gallery,
 }
 
 Future<AvatarPickerSource?> showAvatarPickerSheet(BuildContext context) {
-  return showModalBottomSheet<AvatarPickerSource>(
+  return showDialog<AvatarPickerSource>(
     context: context,
-    useRootNavigator: true,
-    isScrollControlled: true,
-    builder: (context) {
-      return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take Photo'),
-              onTap: () => Navigator.pop(context, AvatarPickerSource.camera),
+    builder: (dialogContext) {
+      return SimpleDialog(
+        title: const Text('Edit Photo'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => safePop(dialogContext, AvatarPickerSource.camera),
+            child: const ListTile(
+              leading: Icon(Icons.photo_camera_outlined),
+              title: Text('Take Photo'),
             ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from Library'),
-              onTap: () => Navigator.pop(context, AvatarPickerSource.gallery),
+          ),
+          SimpleDialogOption(
+            onPressed: () => safePop(dialogContext, AvatarPickerSource.gallery),
+            child: const ListTile(
+              leading: Icon(Icons.photo_library_outlined),
+              title: Text('Choose from Library'),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     },
   );
