@@ -3,6 +3,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 
 import '../../data/mock/suggested_friends_mock_data.dart';
 import '../../models/friend_contact.dart';
+import '../../router.dart';
 import '../../services/contacts_service.dart';
 
 enum FindFriendsTab {
@@ -42,8 +43,9 @@ class _FindFriendsPageState extends State<FindFriendsPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => AppRouter.openFriendSearch(context),
             icon: const Icon(Icons.search),
+            tooltip: 'Search',
           ),
         ],
       ),

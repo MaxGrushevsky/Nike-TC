@@ -8,8 +8,11 @@ import 'models/inbox_message.dart';
 import 'screens/profile/edit_profile_page.dart';
 import 'screens/profile/profile_page.dart';
 import 'screens/profile/find_friends_page.dart';
+import 'screens/profile/friend_search_detail_page.dart';
+import 'screens/profile/friend_search_page.dart';
 import 'screens/profile/profile_pass_page.dart';
 import 'screens/profile/settings_page.dart';
+import 'models/searchable_friend.dart';
 import 'models/user_profile.dart';
 import 'screens/join.dart';
 import 'screens/login.dart';
@@ -165,6 +168,26 @@ class AppRouter {
     return Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => const FindFriendsPage(),
+      ),
+    );
+  }
+
+  static Future<void> openFriendSearch(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const FriendSearchPage(),
+      ),
+    );
+  }
+
+  static Future<bool?> openFriendSearchDetails(
+    BuildContext context,
+    SearchableFriend friend,
+  ) {
+    return Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => FriendSearchDetailPage(friend: friend),
       ),
     );
   }
