@@ -1,5 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:provider/provider.dart';
 
 import 'api/exercises_api.dart';
@@ -8,6 +9,8 @@ import 'core/firebase_bootstrap.dart';
 import 'core/webview_bootstrap.dart';
 import 'navigation/app_route_observer.dart';
 import 'providers/workouts_provider.dart';
+import 'redux/app_state.dart';
+import 'redux/store.dart';
 import 'router.dart';
 
 final AppRouteObserver appRouteObserver = AppRouteObserver();
@@ -18,11 +21,16 @@ Future<void> main() async {
   ensureWebViewPlatform();
   await bootstrapFirebase();
 
+  final store = createAppStore();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (_) =>
-          WorkoutsProvider(ExercisesApi(createDio()))..loadWorkouts(),
-      child: const MainApp(),
+    StoreProvider<AppState>(
+      store: store,
+      child: ChangeNotifierProvider(
+        create: (_) =>
+            WorkoutsProvider(ExercisesApi(createDio()))..loadWorkouts(),
+        child: const MainApp(),
+      ),
     ),
   );
 }

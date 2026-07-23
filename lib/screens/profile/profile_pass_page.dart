@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 import '../../models/user_profile.dart';
-import '../../services/profile_persistence_service.dart';
+import '../../redux/app_state.dart';
+import '../../redux/profile/profile_state.dart';
 
 class ProfilePassPage extends StatefulWidget {
   const ProfilePassPage({super.key});
@@ -15,23 +17,10 @@ class ProfilePassPage extends StatefulWidget {
 }
 
 class _ProfilePassPageState extends State<ProfilePassPage> {
-  UserProfile? _profile;
-  bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadProfile();
     _setMaxBrightness();
-  }
-
-  Future<void> _loadProfile() async {
-    final profile = await ProfilePersistenceService.loadProfile();
-    if (!mounted) return;
-    setState(() {
-      _profile = profile;
-      _isLoading = false;
-    });
   }
 
   Future<void> _setMaxBrightness() async {
@@ -79,81 +68,91 @@ class _ProfilePassPageState extends State<ProfilePassPage> {
             ),
           ),
         ),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : LayoutBuilder(
-                builder: (context, constraints) {
-                  final cardMaxWidth = constraints.maxWidth >= 700 ? 420.0 : 340.0;
+        body: StoreConnector<AppState, ProfileState>(
+          converter: (store) => store.state.profile,
+          builder: (context, profileState) {
+            final profile = profileState.profile;
 
-                  return Align(
-                    alignment: Alignment.topCenter,
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: cardMaxWidth),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
-                              color: Colors.white,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _profile!.uppercaseDisplayName,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.5,
-                                    ),
+            if (profileState.isLoading || profile == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final cardMaxWidth =
+                    constraints.maxWidth >= 700 ? 420.0 : 340.0;
+
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: cardMaxWidth),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                Text(
+                                  profile.uppercaseDisplayName,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.5,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    _profile!.memberSinceLabel,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 28),
-                                  QrImageView(
-                                    data: _passCode(_profile!),
-                                    version: QrVersions.auto,
-                                    size: 220,
-                                    backgroundColor: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 28),
-                            Text.rich(
-                              TextSpan(
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  height: 1.5,
-                                  color: Colors.grey.shade700,
                                 ),
-                                children: const [
-                                  TextSpan(
-                                    text:
-                                        'Check in easily and get personalised service at Nike stores and events. ',
+                                const SizedBox(height: 8),
+                                Text(
+                                  profile.memberSinceLabel,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade600,
                                   ),
-                                  TextSpan(
-                                    text: 'Learn more.',
-                                    style: TextStyle(fontWeight: FontWeight.w700),
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 28),
+                                QrImageView(
+                                  data: _passCode(profile),
+                                  version: QrVersions.auto,
+                                  size: 220,
+                                  backgroundColor: Colors.white,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 28),
+                          Text.rich(
+                            TextSpan(
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 1.5,
+                                color: Colors.grey.shade700,
+                              ),
+                              children: const [
+                                TextSpan(
+                                  text:
+                                      'Check in easily and get personalised service at Nike stores and events. ',
+                                ),
+                                TextSpan(
+                                  text: 'Learn more.',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import '../../data/mock/searchable_friends_mock_data.dart';
 import '../../models/searchable_friend.dart';
+import '../../redux/app_state.dart';
+import '../../redux/profile/profile_actions.dart';
 import '../../router.dart';
-import '../../services/blocked_friends_service.dart';
 
 class FriendSearchPage extends StatefulWidget {
   const FriendSearchPage({super.key});
@@ -16,18 +18,18 @@ class _FriendSearchPageState extends State<FriendSearchPage> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  Set<String> _blockedIds = {};
   List<SearchableFriend> _results = const [];
   bool _hasSearched = false;
 
   @override
   void initState() {
     super.initState();
-    _loadBlockedIds();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _focusNode.requestFocus();
-      }
+      if (!mounted) return;
+      StoreProvider.of<AppState>(
+        context,
+      ).dispatch(const LoadBlockedFriendsAction());
+      _focusNode.requestFocus();
     });
   }
 
@@ -38,14 +40,7 @@ class _FriendSearchPageState extends State<FriendSearchPage> {
     super.dispose();
   }
 
-  Future<void> _loadBlockedIds() async {
-    final blockedIds = await BlockedFriendsService.loadBlockedIds();
-    if (!mounted) return;
-    setState(() => _blockedIds = blockedIds);
-    _runSearch(_controller.text);
-  }
-
-  void _runSearch(String query) {
+  void _runSearch(String query, Set<String> blockedIds) {
     final trimmed = query.trim();
     if (trimmed.length < 3) {
       setState(() {
@@ -59,18 +54,17 @@ class _FriendSearchPageState extends State<FriendSearchPage> {
       _hasSearched = true;
       _results = SearchableFriendsMockData.search(
         trimmed,
-        blockedIds: _blockedIds,
+        blockedIds: blockedIds,
       );
     });
   }
 
-  void _onQueryChanged(String value) {
-    _runSearch(value);
-  }
-
   void _onCancel() {
     _controller.clear();
-    _runSearch('');
+    setState(() {
+      _results = const [];
+      _hasSearched = false;
+    });
     FocusScope.of(context).unfocus();
   }
 
@@ -78,61 +72,70 @@ class _FriendSearchPageState extends State<FriendSearchPage> {
     final blocked = await AppRouter.openFriendSearchDetails(context, friend);
     if (blocked != true || !mounted) return;
 
-    final blockedIds = await BlockedFriendsService.loadBlockedIds();
-    if (!mounted) return;
-    setState(() => _blockedIds = blockedIds);
-    _runSearch(_controller.text);
+    final blockedIds =
+        StoreProvider.of<AppState>(context).state.profile.blockedFriendIds;
+    _runSearch(_controller.text, blockedIds);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      textInputAction: TextInputAction.search,
-                      onChanged: _onQueryChanged,
-                      decoration: InputDecoration(
-                        hintText: 'Search by name or email',
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
+    return StoreConnector<AppState, Set<String>>(
+      converter: (store) => store.state.profile.blockedFriendIds,
+      onDidChange: (previous, blockedIds) {
+        if (_controller.text.trim().length >= 3) {
+          _runSearch(_controller.text, blockedIds);
+        }
+      },
+      builder: (context, blockedIds) {
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          focusNode: _focusNode,
+                          textInputAction: TextInputAction.search,
+                          onChanged: (value) => _runSearch(value, blockedIds),
+                          decoration: InputDecoration(
+                            hintText: 'Search by name or email',
+                            prefixIcon: const Icon(Icons.search),
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: _onCancel,
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      TextButton(
+                        onPressed: _onCancel,
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Expanded(child: _buildBody()),
+              ],
             ),
-            Expanded(child: _buildBody()),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

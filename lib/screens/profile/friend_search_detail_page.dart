@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import '../../models/searchable_friend.dart';
-import '../../services/blocked_friends_service.dart';
+import '../../redux/app_state.dart';
+import '../../redux/profile/profile_actions.dart';
 import '../../utils/safe_navigator.dart';
 
 class FriendSearchDetailPage extends StatelessWidget {
@@ -51,8 +53,7 @@ class FriendSearchDetailPage extends StatelessWidget {
       return;
     }
 
-    await BlockedFriendsService.blockFriend(friend.id);
-    if (!context.mounted) return;
+    StoreProvider.of<AppState>(context).dispatch(BlockFriendAction(friend.id));
     await safePop(context, true);
   }
 
