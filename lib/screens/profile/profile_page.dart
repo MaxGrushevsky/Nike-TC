@@ -1,144 +1,141 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 import '../../models/user_profile.dart';
-import '../../utils/safe_navigator.dart';
+import '../../redux/app_state.dart';
+import '../../redux/profile/profile_actions.dart';
+import '../../redux/profile/profile_state.dart';
 import '../../router.dart';
-import '../../services/profile_persistence_service.dart';
+import '../../utils/safe_navigator.dart';
 import '../../widgets/profile/avatar_picker_sheet.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  UserProfile? _profile;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfile();
-  }
-
-  Future<void> _loadProfile() async {
-    final profile = await ProfilePersistenceService.loadProfile();
-    if (!mounted) return;
-    setState(() {
-      _profile = profile;
-      _isLoading = false;
-    });
-  }
-
-  Future<void> _openEditProfile() async {
-    final profile = _profile;
-    if (profile == null) return;
-
+  Future<void> _openEditProfile(
+    BuildContext context,
+    UserProfile profile,
+  ) async {
     final updatedProfile = await AppRouter.openEditProfile(context, profile);
-    if (updatedProfile == null || !mounted) return;
+    if (updatedProfile == null || !context.mounted) return;
 
-    await ProfilePersistenceService.saveProfile(updatedProfile);
-    setState(() => _profile = updatedProfile);
+    StoreProvider.of<AppState>(
+      context,
+    ).dispatch(SaveProfileAction(updatedProfile));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : LayoutBuilder(
-                builder: (context, constraints) {
-                  final contentMaxWidth = constraints.maxWidth >= 700 ? 520.0 : 420.0;
+    return StoreConnector<AppState, ProfileState>(
+      converter: (store) => store.state.profile,
+      builder: (context, profileState) {
+        final profile = profileState.profile;
 
-                  return Align(
-                    alignment: Alignment.topCenter,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: contentMaxWidth),
-                      child: Column(
-                        children: [
-                          _buildTopBar(),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              padding: const EdgeInsets.symmetric(horizontal: 24),
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 16),
-                                  buildAvatarImage(
-                                    avatarPath: _profile!.avatarPath,
-                                    radius: 56,
+        return Scaffold(
+          body: SafeArea(
+            child: profileState.isLoading || profile == null
+                ? const Center(child: CircularProgressIndicator())
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      final contentMaxWidth =
+                          constraints.maxWidth >= 700 ? 520.0 : 420.0;
+
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: contentMaxWidth),
+                          child: Column(
+                            children: [
+                              _buildTopBar(context),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
                                   ),
-                                  const SizedBox(height: 20),
-                                  Text(
-                                    _profile!.uppercaseDisplayName,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  _OutlinedActionButton(
-                                    label: 'EDIT PROFILE',
-                                    onPressed: _openEditProfile,
-                                  ),
-                                  const SizedBox(height: 28),
-                                  _QuickLinksRow(
-                                    isWide: constraints.maxWidth >= 500,
-                                    onPassTap: () => AppRouter.openProfilePass(context),
-                                    onSettingsTap: () => AppRouter.openSettings(context),
-                                  ),
-                                  const SizedBox(height: 32),
-                                  const Divider(height: 1),
-                                  const SizedBox(height: 24),
-                                  const Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'FRIENDS',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.5,
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 16),
+                                      buildAvatarImage(
+                                        avatarPath: profile.avatarPath,
+                                        radius: 56,
                                       ),
-                                    ),
+                                      const SizedBox(height: 20),
+                                      Text(
+                                        profile.uppercaseDisplayName,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      _OutlinedActionButton(
+                                        label: 'EDIT PROFILE',
+                                        onPressed: () =>
+                                            _openEditProfile(context, profile),
+                                      ),
+                                      const SizedBox(height: 28),
+                                      _QuickLinksRow(
+                                        isWide: constraints.maxWidth >= 500,
+                                        onPassTap: () =>
+                                            AppRouter.openProfilePass(context),
+                                        onSettingsTap: () =>
+                                            AppRouter.openSettings(context),
+                                      ),
+                                      const SizedBox(height: 32),
+                                      const Divider(height: 1),
+                                      const SizedBox(height: 24),
+                                      const Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          'FRIENDS',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      _OutlinedActionButton(
+                                        label: 'ADD FRIENDS',
+                                        onPressed: () =>
+                                            AppRouter.openFindFriends(context),
+                                      ),
+                                      const SizedBox(height: 32),
+                                    ],
                                   ),
-                                  const SizedBox(height: 16),
-                                  _OutlinedActionButton(
-                                    label: 'ADD FRIENDS',
-                                    onPressed: () => AppRouter.openFindFriends(context),
+                                ),
+                              ),
+                              Container(
+                                width: double.infinity,
+                                color: Colors.grey.shade200,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
+                                child: Text(
+                                  profile.memberSinceLabel,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade700,
                                   ),
-                                  const SizedBox(height: 32),
-                                ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          Container(
-                            width: double.infinity,
-                            color: Colors.grey.shade200,
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Text(
-                              _profile!.memberSinceLabel,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-      ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildTopBar() {
+  Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Row(
